@@ -93,35 +93,42 @@ test('Automation Challenge Submission Testing', async ({ page }) => {
   // LOGIN
   // =========================
 
-  await page.goto(
-    'https://www.theautomationchallenge.com/'
-  );
+  await page.goto('https://www.theautomationchallenge.com/');
 
   await page.getByRole('button', {
-    name: 'SIGN UP OR LOGIN'
+    name: 'SIGN UP OR LOGIN',
   }).click();
 
   await page.getByRole('button', {
     name: 'OR LOGIN',
-    exact: true
+    exact: true,
   }).click();
 
-  const email = page.getByRole('textbox', {
-    name: 'Email'
+  // Wait for the visible login fields
+  const email = page.locator(
+    'input[type="email"][placeholder="Email"]:visible'
+  );
+
+  await email.waitFor({
+    state: 'visible',
+    timeout: 10000,
   });
 
-  await expect(email).toBeVisible();
-  await email.fill('gladysveloso17@gmail.com');
+  await email.fill(process.env.TEST_EMAIL!);
 
-  const password = page.getByRole('textbox', {
-    name: 'Password'
+  const password = page.locator(
+    'input[type="password"]:visible'
+  );
+
+  await password.waitFor({
+    state: 'visible',
+    timeout: 10000,
   });
 
-  await expect(password).toBeVisible();
-  await password.fill('123456');
+  await password.fill(process.env.TEST_PASSWORD!);
 
   await page.getByRole('button', {
-    name: 'LOG IN'
+    name: 'LOG IN',
   }).click();
 
   // =========================
