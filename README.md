@@ -1,22 +1,3 @@
-# Playwright Automation Challenge
-
-Automated end-to-end testing solution built with **Playwright and Node.js** for:
-
-**https://www.theautomationchallenge.com/**
-
----
-
-## 🧰 Framework & Technology
-
-* **Framework:** Playwright
-* **Runtime:** Node.js
-* **Language:** TypeScript
-* **Test Data:** CSV
-* **CSV Parser:** `csv-parse`
-* **Browser Automation:** Playwright
-
----
-
 ## 📋 Prerequisites
 
 Before setting up the project, make sure the following are installed:
@@ -24,6 +5,20 @@ Before setting up the project, make sure the following are installed:
 * **Node.js 20 or higher**
 * **npm**
 * **Git**
+* An **existing account** on [The Automation Challenge](https://www.theautomationchallenge.com/)
+
+### 🔐 Account Requirement
+
+Before running the automation, you must **sign up for an account using an existing email address** on the Automation Challenge website.
+
+The test does **not** automate account registration. It assumes that the account already exists and can be used to log in.
+
+You will need the following credentials:
+
+* **Email address** used during registration
+* **Password** associated with the account
+
+> **Important:** Do not add your actual credentials to the source code or commit them to GitHub.
 
 Verify the installation:
 
@@ -44,7 +39,7 @@ git --version
 Clone the GitHub repository:
 
 ```bash
-git clone <https://github.com/gladysfaithveloso-web/playwright-automation.git>
+git clone https://github.com/gladysfaithveloso-web/playwright-automation.git
 ```
 
 Navigate to the project:
@@ -55,13 +50,11 @@ cd playwright-automation
 
 ### 2. Install Dependencies
 
-Install the dependencies defined in `package.json`:
-
 ```bash
 npm install
 ```
 
-The project uses the following main dependencies:
+The project uses:
 
 ```text
 @playwright/test
@@ -70,8 +63,6 @@ csv-parse
 ```
 
 ### 3. Install Playwright Browsers
-
-Install the browser binaries required by Playwright:
 
 ```bash
 npx playwright install
@@ -85,439 +76,86 @@ npx playwright install --with-deps
 
 ---
 
-## ▶️ How to Run the Tests
+## ▶️ How to Run the Automation
 
-### Run all tests
+The login credentials are supplied through environment variables when starting the test. This avoids storing credentials directly in the source code.
+
+### Run the Automation Challenge
+
+Replace the email and password with the credentials of your existing account:
+
+```bash
+TEST_EMAIL="email" TEST_PASSWORD="password" npx playwright test -g "Automation Challenge Submission Testing" --headed
+```
+
+For example:
+
+```bash
+TEST_EMAIL="your-email@example.com" TEST_PASSWORD="your-password" npx playwright test -g "Automation Challenge Submission Testing" --headed
+```
+
+### What Happens When the Test Runs
+
+The automation will:
+
+1. Open the Automation Challenge website.
+2. Open the login page.
+3. Log in using the supplied credentials.
+4. Start the challenge.
+5. Read the company data from the CSV file.
+6. Fill in each company's information.
+7. Detect the CAPTCHA when required.
+8. Allow the CAPTCHA to be completed manually.
+9. Wait for the application to enable the **Submit** button.
+10. Submit the record.
+11. Continue with the next CSV record.
+
+> **Note:** The `--headed` option is required for the manual CAPTCHA step because it allows you to see and interact with the browser.
+
+### Run All Tests
 
 ```bash
 npx playwright test
 ```
 
-### Run tests with the browser visible
-
-Use headed mode when manual CAPTCHA verification is required:
-
-```bash
-npx playwright test --headed
-```
-
-### Run in debug mode
+### Run Tests in Debug Mode
 
 ```bash
 npx playwright test --debug
-```
-
-### Run the Automation Challenge test
-
-```bash
-npx playwright test -g "Automation Challenge Submission Testing"
-```
-
-### Run the Automation Challenge test with the browser visible
-
-```bash
-npx playwright test -g "Automation Challenge Submission Testing" --headed
 ```
 
 ---
 
 ## 🔐 Login Requirement
 
-The automation logs in to the application before starting the challenge.
+The automation **logs in before starting the challenge**.
 
-The automated flow is:
+A valid account must already exist before running the test.
 
-1. Open the Automation Challenge website.
-2. Click **SIGN UP OR LOGIN**.
-3. Select **OR LOGIN**.
-4. Enter the login credentials.
-5. Click **LOG IN**.
-6. Click **Start** to begin the challenge.
-7. Process the CSV test data.
-
-> Valid credentials must be available before running the test. Credentials should not be committed to the repository.
-
-For a production implementation, credentials should be stored using environment variables or a secure credential-management solution.
-
----
-
-## 🤖 CAPTCHA Handling
-
-The application may display a reCAPTCHA before allowing the form to be submitted.
-
-The automation does **not attempt to solve or bypass the CAPTCHA**.
-
-When a CAPTCHA is detected, the script:
-
-1. Detects the CAPTCHA popup.
-2. Opens the CAPTCHA widget.
-3. Allows the user to complete the CAPTCHA manually.
-4. Waits for the application's **Submit** button to become enabled.
-5. Continues with the automated submission.
-
-Because CAPTCHA verification is designed to prevent automated interaction, manual verification is required during test execution.
-
-Run the test in headed mode:
-
-```bash
-npx playwright test --headed
-```
-
-Complete the CAPTCHA manually when prompted. The automation will continue once the application allows the submission to proceed.
-
----
-
-## 📊 Test Data
-
-The test uses a CSV file as the source of test data:
-
-```text
-test-data/challenge - data.csv
-```
-
-Each record contains:
-
-| Field                            | Description                    |
-| -------------------------------- | ------------------------------ |
-| `employer_identification_number` | Employer identification number |
-| `company_name`                   | Company name                   |
-| `sector`                         | Company sector                 |
-| `company_address`                | Company address                |
-| `automation_tool`                | Automation tool used           |
-| `annual_automation_saving`       | Annual automation savings      |
-| `date_of_first_project`          | Date of the first project      |
-
-The test reads the CSV and processes each company record sequentially.
-
----
-
-## 🔍 Dynamic Field Handling
-
-The challenge uses dynamically generated input IDs.
-
-The automation therefore uses stable ID prefixes rather than relying on the complete dynamic ID.
-
-For example:
-
-```ts
-input[id^="company_name_input_field_"]
-```
-
-This approach allows the test to locate the current field even when the dynamically generated portion of the ID changes.
-
----
-
-## 🧪 Test Flow
-
-The complete automation flow is:
+The login flow is:
 
 ```text
 Open Website
      ↓
-Login
+SIGN UP OR LOGIN
+     ↓
+OR LOGIN
+     ↓
+Enter Email
+     ↓
+Enter Password
+     ↓
+LOG IN
      ↓
 Start Challenge
      ↓
-Read CSV Data
-     ↓
-Locate Dynamic Fields
-     ↓
-Fill Company Information
-     ↓
-Detect CAPTCHA
-     ↓
-Manual CAPTCHA Verification
-     ↓
-Submit Form
-     ↓
-Process Next CSV Record
-     ↓
-Complete Test
+Begin Automation
 ```
 
----
-
-## 📝 Code Documentation
-
-The automation script includes comments explaining the key steps and logic.
-
-Comments are provided for important areas such as:
-
-* Login and authentication
-* Starting the challenge
-* Reading and processing CSV data
-* Locating dynamic form fields
-* Filling company information
-* CAPTCHA detection and manual verification
-* Form submission
-* Processing multiple CSV records
-
-The comments are intended to make the automation easier to understand, maintain, and troubleshoot.
-
----
-
-## 📁 Project Structure
-
-```text
-playwright-automation/
-│
-├── tests/
-│   └── automation-challenge.spec.ts
-│
-├── test-data/
-│   └── challenge - data.csv
-│
-├── test-results/
-│
-├── package.json
-├── package-lock.json
-├── playwright.config.ts
-└── README.md
-```
-
----
-
-## 📦 Dependencies
-
-The project intentionally keeps the dependency list minimal.
-
-### Development Dependencies
-
-```json
-"devDependencies": {
-  "@playwright/test": "^1.62.1",
-  "@types/node": "^26.4.0"
-}
-```
-
-### Dependencies
-
-```json
-"dependencies": {
-  "csv-parse": "^7.0.2"
-}
-```
-
----
-
-## ⚠️ Assumptions Made During Development
-
-The following assumptions were made while developing the automation:
-
-1. **Valid login credentials are available.**
-   The test requires a valid account to access the challenge.
-
-2. **The application is accessible and available.**
-   The test assumes the Automation Challenge website is reachable and functioning normally.
-
-3. **The CSV file follows the expected structure.**
-   The test assumes `challenge - data.csv` contains the required column names and valid data.
-
-4. **Dynamic field ID prefixes remain consistent.**
-   The dynamically generated portion of the input IDs may change, but the stable field prefixes are assumed to remain consistent.
-
-5. **CAPTCHA requires manual interaction.**
-   CAPTCHA verification is intentionally handled manually and is not automated.
-
-6. **The Submit button reflects the application's verification state.**
-   After manual CAPTCHA completion, the test waits for the Submit button to become enabled before continuing.
-
-7. **Records are processed sequentially.**
-   Each CSV record is completed before moving to the next record.
-
-8. **The application's UI structure remains reasonably stable.**
-   Changes to button names, field attributes, or major DOM structures may require locator updates.
-
-9. **The test is intended for the provided challenge environment.**
-   The automation is designed around the current behavior and structure of the Automation Challenge website and may require adjustments if the application changes.
-
----
-
-## 🛠️ Troubleshooting
-
-### Playwright browser is missing
-
-Run:
+The credentials are provided at runtime:
 
 ```bash
-npx playwright install
+TEST_EMAIL="email" TEST_PASSWORD="password" npx playwright test -g "Automation Challenge Submission Testing" --headed
 ```
 
-For Linux:
-
-```bash
-npx playwright install --with-deps
-```
-
-### CSV file cannot be found
-
-Verify that the file exists at:
-
-```text
-test-data/challenge - data.csv
-```
-
-### CAPTCHA prevents submission
-
-Run the test in headed mode:
-
-```bash
-npx playwright test --headed
-```
-
-Complete the CAPTCHA manually when prompted.
-
-### Dynamic field cannot be found
-
-The challenge uses dynamic IDs. Verify that the stable ID prefix has not changed.
-
-For example:
-
-```ts
-input[id^="company_name_input_field_"]
-```
-
-### Test artifacts
-
-When configured, Playwright stores test results and debugging artifacts in:
-
-```text
-test-results/
-```
-
-These artifacts can be used to investigate failed test executions.
-
----
-
-## 📌 Notes
-
-This project was developed as a QA Automation assessment using Playwright and Node.js.
-
-The implementation focuses on:
-
-* End-to-end test automation
-* Data-driven testing using CSV
-* Maintainable dynamic locators
-* Reusable helper functions
-* Manual CAPTCHA verification
-* Clear code documentation
-* Sequential processing of test records
-* Debuggable test execution
-
-## ✅ Assessment Criteria
-
-This automation was developed with the following assessment criteria in mind:
-
-### 1. Functionality
-
-The test automates the complete challenge workflow:
-
-* Logs in to the application.
-* Starts the Automation Challenge.
-* Reads company records from the CSV test data.
-* Locates dynamically generated form fields.
-* Populates the required company information.
-* Detects the CAPTCHA and allows manual verification.
-* Waits for the application to allow submission.
-* Submits each company record.
-* Continues processing the remaining records.
-
-The test is designed to process the provided CSV data sequentially and complete the required submission workflow.
-
----
-
-### 2. Performance
-
-The test is configured with a maximum execution time of **3 minutes and 50 seconds**, keeping the execution within the required **4-minute limit**.
-
-```ts
-test.setTimeout(230000);
-```
-
-The automation also avoids unnecessary fixed delays where possible and uses Playwright's built-in waiting mechanisms such as:
-
-```ts
-await expect(locator).toBeVisible();
-await expect(locator).toBeEnabled();
-```
-
-This allows Playwright to wait for the required application state instead of relying extensively on arbitrary delays.
-
-> CAPTCHA verification is a manual step and may affect the actual execution time depending on how quickly the CAPTCHA is completed.
-
----
-
-### 3. Code Quality
-
-The code is structured using reusable helper functions to improve maintainability and readability.
-
-For example:
-
-```ts
-async function findDynamicField(
-  page: Page,
-  fieldPrefix: string
-) {
-  const field = page.locator(
-    `input[id^="${fieldPrefix}"]:visible`
-  );
-
-  await expect(field).toHaveCount(1);
-
-  return field;
-}
-```
-
-This avoids repeating the same locator and validation logic for every dynamic field.
-
-The test is organized into clear sections:
-
-* Test data setup
-* Helper functions
-* Login
-* Challenge initialization
-* CSV processing
-* Dynamic field handling
-* CAPTCHA handling
-* Form submission
-
-The implementation also uses stable locator strategies where possible rather than depending on dynamically generated IDs or fixed element positions.
-
----
-
-### 4. Documentation
-
-The code includes comments around key steps and logic to make the automation easier to understand and maintain.
-
-Examples include comments for:
-
-```ts
-// LOGIN
-
-// START CHALLENGE
-
-// PROCESS CSV DATA
-
-// Locate dynamic fields
-
-// Fill form data
-
-// Handle CAPTCHA manually
-
-// Submit form
-```
-
-The README also provides:
-
-* Project prerequisites
-* Installation instructions
-* Dependency information
-* Playwright browser setup
-* Test execution commands
-* CAPTCHA handling instructions
-* Test data structure
-* Project structure
-* Troubleshooting information
-* Development assumptions
-
-The goal is to make the project understandable and executable by another QA engineer without requiring additional setup guidance.
+Credentials are intentionally not hardcoded in the test and should never be committed to the public repository.
