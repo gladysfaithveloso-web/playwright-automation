@@ -44,7 +44,7 @@ git --version
 Clone the GitHub repository:
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/gladysfaithveloso-web/playwright-automation.git>
 ```
 
 Navigate to the project:
@@ -403,3 +403,121 @@ The implementation focuses on:
 * Clear code documentation
 * Sequential processing of test records
 * Debuggable test execution
+
+## ✅ Assessment Criteria
+
+This automation was developed with the following assessment criteria in mind:
+
+### 1. Functionality
+
+The test automates the complete challenge workflow:
+
+* Logs in to the application.
+* Starts the Automation Challenge.
+* Reads company records from the CSV test data.
+* Locates dynamically generated form fields.
+* Populates the required company information.
+* Detects the CAPTCHA and allows manual verification.
+* Waits for the application to allow submission.
+* Submits each company record.
+* Continues processing the remaining records.
+
+The test is designed to process the provided CSV data sequentially and complete the required submission workflow.
+
+---
+
+### 2. Performance
+
+The test is configured with a maximum execution time of **3 minutes and 50 seconds**, keeping the execution within the required **4-minute limit**.
+
+```ts
+test.setTimeout(230000);
+```
+
+The automation also avoids unnecessary fixed delays where possible and uses Playwright's built-in waiting mechanisms such as:
+
+```ts
+await expect(locator).toBeVisible();
+await expect(locator).toBeEnabled();
+```
+
+This allows Playwright to wait for the required application state instead of relying extensively on arbitrary delays.
+
+> CAPTCHA verification is a manual step and may affect the actual execution time depending on how quickly the CAPTCHA is completed.
+
+---
+
+### 3. Code Quality
+
+The code is structured using reusable helper functions to improve maintainability and readability.
+
+For example:
+
+```ts
+async function findDynamicField(
+  page: Page,
+  fieldPrefix: string
+) {
+  const field = page.locator(
+    `input[id^="${fieldPrefix}"]:visible`
+  );
+
+  await expect(field).toHaveCount(1);
+
+  return field;
+}
+```
+
+This avoids repeating the same locator and validation logic for every dynamic field.
+
+The test is organized into clear sections:
+
+* Test data setup
+* Helper functions
+* Login
+* Challenge initialization
+* CSV processing
+* Dynamic field handling
+* CAPTCHA handling
+* Form submission
+
+The implementation also uses stable locator strategies where possible rather than depending on dynamically generated IDs or fixed element positions.
+
+---
+
+### 4. Documentation
+
+The code includes comments around key steps and logic to make the automation easier to understand and maintain.
+
+Examples include comments for:
+
+```ts
+// LOGIN
+
+// START CHALLENGE
+
+// PROCESS CSV DATA
+
+// Locate dynamic fields
+
+// Fill form data
+
+// Handle CAPTCHA manually
+
+// Submit form
+```
+
+The README also provides:
+
+* Project prerequisites
+* Installation instructions
+* Dependency information
+* Playwright browser setup
+* Test execution commands
+* CAPTCHA handling instructions
+* Test data structure
+* Project structure
+* Troubleshooting information
+* Development assumptions
+
+The goal is to make the project understandable and executable by another QA engineer without requiring additional setup guidance.
